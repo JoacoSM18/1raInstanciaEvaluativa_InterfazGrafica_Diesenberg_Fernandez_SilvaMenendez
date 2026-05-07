@@ -66,6 +66,10 @@ public class Materia implements Consultable, Evaluable {
     public double getPromedio() {
         return 0; // placeholder por ahora
     }
+    
+    public String getCodigo() {
+    return this.codigo;
+}
 
     @Override
     public boolean estaAprobada() {
