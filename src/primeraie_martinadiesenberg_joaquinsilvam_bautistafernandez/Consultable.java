@@ -8,6 +8,7 @@ package primeraie_martinadiesenberg_joaquinsilvam_bautistafernandez;
  *
  * @author Martina Diesenberg
  */
+//act
 public interface Consultable {
     void mostrarResumen();
 }
