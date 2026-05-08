@@ -10,9 +10,9 @@ import java.util.ArrayList;
  * @author joako
  */
 public class Estudiante extends PersonaAcademica {
-    String carrera;
-    int anioIngreso;
-    ArrayList <InscripcionMateria> materias;
+    private String carrera;
+    private int anioIngreso;
+    private ArrayList <InscripcionMateria> materias;
    
     public Estudiante (String nombre, String legajo, String carrera, int anioIngreso){
         super(nombre,legajo);
@@ -20,14 +20,15 @@ public class Estudiante extends PersonaAcademica {
         this.anioIngreso = anioIngreso;
         this.materias = new ArrayList<>();
     }
+    
     @Override
-    public void MostrarResumen() {
+    public void mostrarResumen() {
         System.out.println("Nombre: " + getNombre());
         System.out.println("Legajo: " + getLegajo());
         System.out.println("Carrera: " + carrera);
         System.out.println("Año de ingreso: " + anioIngreso);
     }
-    public void Inscribirse(Materia m,int totalClases) {
+    public void inscribirse(Materia m,int totalClases) {
         InscripcionMateria nueva = new InscripcionMateria(m, totalClases);
         materias.add(nueva);
     }
@@ -52,15 +53,14 @@ public class Estudiante extends PersonaAcademica {
     }
 
     public double getPromedioGeneral() {
-        double suma = 0;
-        for (InscripcionMateria im : materias) {
-            suma += im.getPromedio();
-        }
-        if (materias.size() == 0) {
-            return 0;
-        }
-        return suma / materias.size();
-    }
+        if (materias.isEmpty()) return 0.0;
+            double suma = 0;
+            for (InscripcionMateria im : materias) {
+                suma += im.getPromedio();
+            }
+            return suma / materias.size();
+    }   
+      
 
     public ArrayList<InscripcionMateria> getMateriasCriticas() {
         ArrayList<InscripcionMateria> criticas = new ArrayList<>();

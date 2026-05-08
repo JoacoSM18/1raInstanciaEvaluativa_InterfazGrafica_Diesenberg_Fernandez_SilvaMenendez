@@ -5,7 +5,7 @@
 package primeraie_martinadiesenberg_joaquinsilvam_bautistafernandez;
 /**
  *
- * @author Martina Diesenberg
+ * @author joako
  */
 public abstract class PersonaAcademica {
     String nombre;
@@ -14,7 +14,7 @@ public abstract class PersonaAcademica {
         this.nombre = Nombre;
         this.legajo = Legajo;
     }
-    abstract void MostrarResumen();
+    abstract void mostrarResumen();
     public String getNombre (){
         if (nombre.equals("")){
             System.out.print("Nombre Invalido, Por Favor Vuelva a Escribirlo");
