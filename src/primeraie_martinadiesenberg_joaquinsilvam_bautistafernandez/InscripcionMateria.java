@@ -1,15 +1,7 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package primeraie_martinadiesenberg_joaquinsilvam_bautistafernandez;
 
 import java.util.ArrayList;
 
-/**
- *
- * @author bauti
- */
 public class InscripcionMateria implements Evaluable {
     
     private Materia materia;
@@ -29,7 +21,6 @@ public class InscripcionMateria implements Evaluable {
             this.clasesAsistidas++; 
         }
         
-        // Calculamos el porcentaje
         double porcentaje = this.getPorcentajeAsistencia();
         System.out.println("Asistencia actualizada: " + porcentaje + "%");
         
@@ -48,6 +39,11 @@ public class InscripcionMateria implements Evaluable {
     }
     
     public void agregarNota(double nota) {
+        if (this.notas.size() >= 5) {
+            System.out.println("Error: No se pueden cargar mas de 5 notas.");
+            return;
+        }
+
         if (nota >= 0 && nota <= 10) {
             this.notas.add(nota);
         } else {
