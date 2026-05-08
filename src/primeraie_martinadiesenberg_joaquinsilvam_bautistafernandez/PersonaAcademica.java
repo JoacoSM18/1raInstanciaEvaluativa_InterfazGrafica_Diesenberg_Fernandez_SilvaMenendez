@@ -5,7 +5,7 @@
 package primeraie_martinadiesenberg_joaquinsilvam_bautistafernandez;
 /**
  *
- * @author Martina Diesenberg
+ * @author joako
  */
 public abstract class PersonaAcademica {
     String nombre;
