@@ -85,20 +85,61 @@ public class PrimeraIE_MartinaDiesenberg_JoaquinSilvaM_BautistaFernandez {
 
     public static void inscribirMateria() {
         Materia m = new Materia();
-
-        System.out.print("Nombre: ");
-        m.setNombre(sc.nextLine());
-
-        System.out.print("Codigo: ");
-        m.setCodigo(sc.nextLine());
-
-        System.out.print("Cuatrimestre (1 o 2): ");
-        m.setCuatrimestre(sc.nextInt());
-
-        System.out.print("Año: ");
-        m.setAnio(sc.nextInt());
+        String nombre;
+        do {
+            System.out.print("Nombre: ");
+            nombre = sc.nextLine().trim();
+            if (nombre.isEmpty()) {
+                System.out.println("El nombre no puede estar vacío");
+            }   
+        } 
+        while (nombre.isEmpty());
+        m.setNombre(nombre);
+        String codigo;
+        do 
+        {
+            System.out.print("Codigo: ");
+            codigo = sc.nextLine().trim();
+            if (codigo.length() < 3 || codigo.length() > 10) {
+                System.out.println("El codigo debe tener entre 3 y 10 caracteres");
+                codigo = "";
+            } else if (Materia.codigos.contains(codigo)) {
+                System.out.println("Ese codigo ya existe, ingrese otro");
+                codigo = "";
+            }
+        } 
+        while (codigo.isEmpty());
+        m.setCodigo(codigo);
+        int cuatrimestre;
+        do {
+            System.out.print("Cuatrimestre (1 o 2): ");
+            while (!sc.hasNextInt()) {
+                System.out.println("Ingrese un número válido");
+                sc.nextLine();
+            }
+            cuatrimestre = sc.nextInt();
+            if (cuatrimestre != 1 && cuatrimestre != 2) {
+                System.out.println("El cuatrimestre debe ser 1 o 2");
+            }
+        } 
+        while (cuatrimestre != 1 && cuatrimestre != 2);
+            sc.nextLine();
+            m.setCuatrimestre(cuatrimestre);
+            int anio;
+        do {
+            System.out.print("Año: ");
+            while (!sc.hasNextInt()) {
+                System.out.println("Ingrese un número válido");
+                sc.nextLine();
+            }
+            anio = sc.nextInt();
+            if (anio < 1 || anio > 5) {
+                System.out.println("El año debe estar entre 1 y 5");
+            }
+        } 
+        while (anio < 1 || anio > 5);
         sc.nextLine();
-
+        m.setAnio(anio);
         materias.add(m);
         System.out.println("Materia agregada");
     }
