@@ -15,7 +15,7 @@ public interface Evaluable {
 
     default void mostrarEstadoAcademico(){
         System.out.println("Condicion: " + getCondicion());
-        System.out.println("Promedio: " + getPromedio());
+        System.out.println("Promedio: " + getPromedio()); 
     }
 }
 
