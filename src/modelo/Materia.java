@@ -75,6 +75,20 @@ import java.util.ArrayList;
     return this.codigo;
     }
 
+
+    public String getNombre() {
+        return this.nombre;
+    }
+
+    public int getCuatrimestre() {
+        return this.cuatrimestre;
+    }
+
+    public int getAnio() {
+        return this.anio;
+    }
+
+
     @Override
     public boolean estaAprobada() {
         return getPromedio() >= 6;
