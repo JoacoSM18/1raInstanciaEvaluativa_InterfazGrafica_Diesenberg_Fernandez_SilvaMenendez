@@ -4,10 +4,24 @@
  */
 package segundaie_martinadiesenberg_joaquinsilvam_bautistafernandez;
 
+import segundaie_martinadiesenberg_joaquinsilvam_bautistafernandez.Materia;
+import java.util.ArrayList;
 /**
  *
- * @author Alumno
+ * @author Martina Diesenberg
  */
 public class EstudianteDAO {
-    
+    private ArrayList<Estudiante> estudiantes;
+
+    public EstudianteDAO() {
+        estudiantes = new ArrayList<>();
+    }
+
+    public void guardar(Estudiante estudiante) {
+        estudiantes.add(estudiante);
+    }
+
+    public ArrayList<Estudiante> listar() {
+        return estudiantes;
+    }
 }
