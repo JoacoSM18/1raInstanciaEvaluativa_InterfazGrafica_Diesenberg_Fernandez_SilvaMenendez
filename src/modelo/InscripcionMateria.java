@@ -85,6 +85,39 @@ public class InscripcionMateria implements Evaluable {
     public Materia getMateria() {
         return materia;
     }
-   
+    
+    public void setClasesAsistidas(int clasesAsistidas) {
+        this.clasesAsistidas = clasesAsistidas;
+    }
+
+    public void setNotas(ArrayList<Double> notas) {
+        this.notas = notas;
+    }
+    
+   public String toTexto() {
+        String notasTexto = "";
+        for (int i = 0; i < notas.size(); i++) {
+            notasTexto += notas.get(i);
+            if (i < notas.size() - 1) {
+                notasTexto += ",";
+            }
+        }
+        return materia.getCodigo() + "|" + totalClases + "|" + clasesAsistidas + "|" + notasTexto;
+    }
+
+    public static InscripcionMateria fromTexto(String linea, Materia materia) {
+        String[] partes = linea.split("\\|");
+        int totalClases = Integer.parseInt(partes[1]);
+        InscripcionMateria im = new InscripcionMateria(materia, totalClases);
+        im.setClasesAsistidas(Integer.parseInt(partes[2]));
+        ArrayList<Double> notasArr = new ArrayList<>();
+        if (partes.length > 3 && !partes[3].isEmpty()) {
+            for (String n : partes[3].split(",")) {
+                notasArr.add(Double.parseDouble(n));
+            }
+        }
+        im.setNotas(notasArr);
+        return im;
+    }
 }
 

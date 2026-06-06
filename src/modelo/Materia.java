@@ -73,12 +73,27 @@ import java.util.ArrayList;
     
     public String getCodigo() {
     return this.codigo;
-}
+    }
 
     @Override
     public boolean estaAprobada() {
         return getPromedio() >= 6;
     }
+    
+    public String toTexto() {
+    return codigo + "|" + nombre + "|" + cuatrimestre + "|" + anio;
+    }
+
+    public static Materia fromTexto(String linea) {
+        String[] partes = linea.split("\\|");
+        Materia m = new Materia();
+        m.setCodigo(partes[0]);
+        m.setNombre(partes[1]);
+        m.setCuatrimestre(Integer.parseInt(partes[2]));
+        m.setAnio(Integer.parseInt(partes[3]));
+        return m;
+    }
+    public Materia() {} 
 }
       
 
