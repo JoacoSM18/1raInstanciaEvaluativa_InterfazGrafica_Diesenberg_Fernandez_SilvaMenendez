@@ -19,7 +19,6 @@ public class EstudianteControlador {
     private Estudiante estudiante;
     private ArrayList<Materia> materias;
     private ArrayList<InscripcionMateria> inscripciones;
-
     private EstudianteDAO estudianteDAO;
     private MateriaDAO materiaDAO;
     private InscripcionDAO inscripcionDAO;
@@ -28,8 +27,6 @@ public class EstudianteControlador {
         this.estudianteDAO = new EstudianteDAO();
         this.materiaDAO = new MateriaDAO();
         this.inscripcionDAO = new InscripcionDAO();
-
-        // carga los datos al arrancar
         this.estudiante = estudiante;
         this.materias = materiaDAO.leerTodas();
         this.inscripciones = inscripcionDAO.leerTodas(materias);
