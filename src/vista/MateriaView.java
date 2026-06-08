@@ -13,6 +13,7 @@ import modelo.InscripcionMateria;
 import modelo.Materia;
 import javax.swing.JOptionPane;
 
+
 /**
  *
  * @author Martina Diesenberg
@@ -22,7 +23,8 @@ public class MateriaView extends javax.swing.JFrame {
     private Estudiante estudiante;
     private DefaultTableModel modeloTabla;
     private DefaultListModel<String> modeloLista;
-    
+    private Controlador.EstudianteControlador controlador;
+
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(MateriaView.class.getName());
 
     /**
@@ -30,6 +32,7 @@ public class MateriaView extends javax.swing.JFrame {
      */
     public MateriaView(Estudiante estudiante) {
         initComponents();
+        this.controlador = new Controlador.EstudianteControlador(estudiante);
         this.estudiante = estudiante;
 
         lblUsuarioYLegajo.setText("Alumno: " + estudiante.getNombre() + " | Legajo: " + estudiante.getLegajo());
@@ -69,13 +72,30 @@ public class MateriaView extends javax.swing.JFrame {
         btnRegistrarAsistencia = new javax.swing.JButton();
         btnRegistrarNota = new javax.swing.JButton();
         btnBaja = new javax.swing.JButton();
+        jPanel1 = new javax.swing.JPanel();
+        lblBuscar = new javax.swing.JLabel();
+        txtBuscar = new javax.swing.JTextField();
+        btnBuscar = new javax.swing.JButton();
+        jLabel4 = new javax.swing.JLabel();
+        jLabel5 = new javax.swing.JLabel();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        tablaRiesgo = new javax.swing.JTable();
+        jLabel6 = new javax.swing.JLabel();
+        jLabel7 = new javax.swing.JLabel();
+        jLabel9 = new javax.swing.JLabel();
+        jLabel10 = new javax.swing.JLabel();
         lblUsuarioYLegajo = new javax.swing.JLabel();
+        lblMax = new javax.swing.JLabel();
+        lblMin = new javax.swing.JLabel();
+        lblPromedioAprobadas = new javax.swing.JLabel();
 
         jLabel1.setText("jLabel1");
 
         jLabel2.setText("jLabel2");
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+
+        jTabbedPane1.setName("Reportes"); // NOI18N
 
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -139,6 +159,7 @@ public class MateriaView extends javax.swing.JFrame {
         btnInscribir.setText("Inscribir Materia");
 
         btnRegistrarAsistencia.setText("Registrar Asistencia");
+        btnRegistrarAsistencia.addActionListener(this::btnRegistrarAsistenciaActionPerformed);
 
         btnRegistrarNota.setText("Registrar Nota");
 
@@ -173,7 +194,118 @@ public class MateriaView extends javax.swing.JFrame {
 
         jTabbedPane1.addTab("Registrar", jPanel6);
 
+        lblBuscar.setText("Buscar:");
+
+        txtBuscar.setText("Nombre o codigo de la materia...");
+        txtBuscar.setToolTipText("");
+
+        btnBuscar.setText("Buscar");
+        btnBuscar.addActionListener(this::btnBuscarActionPerformed);
+
+        jLabel4.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        jLabel4.setText("Materias en riesgo");
+        jLabel4.setToolTipText("");
+
+        jLabel5.setForeground(new java.awt.Color(204, 204, 204));
+        jLabel5.setText("Ordenadas por asistencia ascendente ");
+
+        tablaRiesgo.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null}
+            },
+            new String [] {
+                "Materia", "Asistencia % "
+            }
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        jScrollPane2.setViewportView(tablaRiesgo);
+
+        jLabel6.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        jLabel6.setText("Materias aprobadas");
+        jLabel6.setToolTipText("");
+
+        jLabel7.setText("Nota máxima ");
+
+        jLabel9.setText("Nota mínima ");
+
+        jLabel10.setText("Promedio");
+        jLabel10.setToolTipText("");
+
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane2)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(lblBuscar)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(txtBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(btnBuscar))
+                            .addComponent(jLabel4)
+                            .addComponent(jLabel5))
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(jLabel6)
+                        .addGap(0, 0, Short.MAX_VALUE))))
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGap(114, 114, 114)
+                .addComponent(jLabel7)
+                .addGap(136, 136, 136)
+                .addComponent(jLabel9)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 176, Short.MAX_VALUE)
+                .addComponent(jLabel10)
+                .addGap(131, 131, 131))
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGap(18, 18, 18)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lblBuscar)
+                    .addComponent(txtBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(26, 26, 26)
+                .addComponent(jLabel4)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel5)
+                .addGap(18, 18, 18)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 213, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(26, 26, 26)
+                .addComponent(jLabel6)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 13, Short.MAX_VALUE)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel7)
+                    .addComponent(jLabel9)
+                    .addComponent(jLabel10))
+                .addContainerGap())
+        );
+
+        jTabbedPane1.addTab("Reportes", jPanel1);
+
         lblUsuarioYLegajo.setText("Usuario y Legajo");
+
+        lblMax.setText("0");
+        lblMax.setName("lblMax"); // NOI18N
+
+        lblMin.setText("0");
+
+        lblPromedioAprobadas.setText("0");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -185,6 +317,14 @@ public class MateriaView extends javax.swing.JFrame {
                     .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 756, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(lblUsuarioYLegajo, javax.swing.GroupLayout.PREFERRED_SIZE, 439, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(19, Short.MAX_VALUE))
+            .addGroup(layout.createSequentialGroup()
+                .addGap(162, 162, 162)
+                .addComponent(lblMax)
+                .addGap(206, 206, 206)
+                .addComponent(lblMin)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(lblPromedioAprobadas)
+                .addGap(173, 173, 173))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -193,11 +333,34 @@ public class MateriaView extends javax.swing.JFrame {
                 .addComponent(lblUsuarioYLegajo)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 468, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(25, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lblMax)
+                    .addComponent(lblMin)
+                    .addComponent(lblPromedioAprobadas))
+                .addContainerGap(44, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void btnRegistrarAsistenciaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRegistrarAsistenciaActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnRegistrarAsistenciaActionPerformed
+
+    private void btnBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBuscarActionPerformed
+    String texto = txtBuscar.getText().toLowerCase();
+    for (int i = 0; i < modeloTabla.getRowCount(); i++) {
+        String nombre = modeloTabla.getValueAt(i, 0).toString().toLowerCase();
+        if (nombre.contains(texto)) {
+            jTabbedPane1.setSelectedIndex(0);
+            jTable1.setRowSelectionInterval(i, i);
+            jTable1.scrollRectToVisible(jTable1.getCellRect(i, 0, true));
+            return;
+        }
+    }
+    JOptionPane.showMessageDialog(this, "No se encontró la materia.");
+    }//GEN-LAST:event_btnBuscarActionPerformed
 
     /**
      * @param args the command line arguments
@@ -228,10 +391,10 @@ public class MateriaView extends javax.swing.JFrame {
         Materia m1 = new Materia();
         m1.setNombre("Matematica I");
         m1.setCodigo("MAT");
-        e.inscribirse(m1, 20);
-        e.getInscripcion("MAT").registrarAsistencia(true);
-        e.getInscripcion("MAT").registrarAsistencia(true);
-        e.getInscripcion("MAT").agregarNota(8.0);
+        e.inscribirse(m1, 10);
+        for (int i = 0; i < 8; i++) e.getInscripcion("MAT").registrarAsistencia(true);
+        for (int i = 0; i < 2; i++) e.getInscripcion("MAT").registrarAsistencia(false);
+        e.getInscripcion("MAT").agregarNota(5.0);
 
         // Materia 2
         Materia m2 = new Materia();
@@ -251,6 +414,7 @@ public class MateriaView extends javax.swing.JFrame {
         actualizarTabla();
         actualizarAsistencia();
         actualizarLista();
+        actualizarReportes();
     }
 
     private void actualizarTabla() {
@@ -295,22 +459,83 @@ public class MateriaView extends javax.swing.JFrame {
                 String.format("%.0f", im.getPorcentajeAsistencia()) + "%");
         }
     }
+    
+    private void actualizarReportes() {
+    DefaultTableModel modeloRiesgo = new DefaultTableModel(
+        new String[]{"Materia", "Asistencia %"}, 0) {
+        public boolean isCellEditable(int r, int c) { return false; }
+    };
+
+    java.util.ArrayList<InscripcionMateria> riesgo = new java.util.ArrayList<>();
+    for (InscripcionMateria im : estudiante.getMaterias()) {
+        double asistencia = im.getPorcentajeAsistencia();
+        if (asistencia >= 75 && asistencia <= 85) {
+            riesgo.add(im);
+        }
+    }
+    riesgo.sort((a, b) -> Double.compare(a.getPorcentajeAsistencia(), b.getPorcentajeAsistencia()));
+
+    for (InscripcionMateria im : riesgo) {
+        modeloRiesgo.addRow(new Object[]{
+            im.getMateria().getNombre(),
+            String.format("%.0f%%", im.getPorcentajeAsistencia())
+        });
+    }
+    tablaRiesgo.setModel(modeloRiesgo);
+
+    java.util.ArrayList<Double> promedios = new java.util.ArrayList<>();
+    for (InscripcionMateria im : estudiante.getMaterias()) {
+        if (im.estaAprobada()) {
+            promedios.add(im.getPromedio());
+        }
+    }
+    if (promedios.isEmpty()) {
+        lblMax.setText("0.00");
+        lblMin.setText("0.00");
+        lblPromedioAprobadas.setText("0.00");
+    } else {
+        double max = promedios.get(0), min = promedios.get(0), suma = 0;
+        for (double p : promedios) {
+            if (p > max) max = p;
+            if (p < min) min = p;
+            suma += p;
+        }
+        lblMax.setText(String.format("%.2f", max));
+        lblMin.setText(String.format("%.2f", min));
+        lblPromedioAprobadas.setText(String.format("%.2f", suma / promedios.size()));
+    }
+}
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnBaja;
+    private javax.swing.JButton btnBuscar;
     private javax.swing.JButton btnInscribir;
     private javax.swing.JButton btnRegistrarAsistencia;
     private javax.swing.JButton btnRegistrarNota;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel9;
+    private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
     private javax.swing.JPanel jPanel6;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JTable jTable1;
+    private javax.swing.JLabel lblBuscar;
+    private javax.swing.JLabel lblMax;
+    private javax.swing.JLabel lblMin;
     private javax.swing.JLabel lblPromedio;
+    private javax.swing.JLabel lblPromedioAprobadas;
     private javax.swing.JLabel lblUsuarioYLegajo;
+    private javax.swing.JTable tablaRiesgo;
+    private javax.swing.JTextField txtBuscar;
     // End of variables declaration//GEN-END:variables
 }
