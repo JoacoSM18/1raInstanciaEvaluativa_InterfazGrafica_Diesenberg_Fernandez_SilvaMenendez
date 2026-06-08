@@ -78,6 +78,15 @@ public class Estudiante extends PersonaAcademica {
     public ArrayList<InscripcionMateria> getMaterias() {
         return materias;
     }
+    
+    public String getCarrera() {
+        return carrera;
+    }
+
+    public int getAnioIngreso() {
+        return anioIngreso;
+    }
+    
     public String toTexto() {
         return getNombre() + "|" + getLegajo() + "|" + carrera + "|" + anioIngreso;
     }
