@@ -4,24 +4,35 @@
  */
 package dao;
 
-import java.util.ArrayList;
+import java.io.*;
 import modelo.Estudiante;
 /**
  *
  * @author Martina Diesenberg
  */
 public class EstudianteDAO {
-    private ArrayList<Estudiante> estudiantes;
 
-    public EstudianteDAO() {
-        estudiantes = new ArrayList<>();
-    }
+    private String archivo = "estudiante.txt";
 
     public void guardar(Estudiante estudiante) {
-        estudiantes.add(estudiante);
+        try (PrintWriter pw = new PrintWriter(new FileWriter(archivo))) {
+            pw.println(estudiante.toTexto());
+        } catch (IOException e) {
+            System.out.println("Error guardando estudiante: " + e.getMessage());
+        }
     }
 
-    public ArrayList<Estudiante> listar() {
-        return estudiantes;
+    public Estudiante leer() {
+        File f = new File(archivo);
+        if (!f.exists()) return null;
+        try (BufferedReader br = new BufferedReader(new FileReader(f))) {
+            String linea = br.readLine();
+            if (linea != null && !linea.isEmpty()) {
+                return Estudiante.fromTexto(linea);
+            }
+        } catch (IOException e) {
+            System.out.println("Error leyendo estudiante: " + e.getMessage());
+        }
+        return null;
     }
 }

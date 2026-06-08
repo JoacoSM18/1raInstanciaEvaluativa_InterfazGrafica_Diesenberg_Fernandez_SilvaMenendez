@@ -78,5 +78,13 @@ public class Estudiante extends PersonaAcademica {
     public ArrayList<InscripcionMateria> getMaterias() {
         return materias;
     }
+    public String toTexto() {
+        return getNombre() + "|" + getLegajo() + "|" + carrera + "|" + anioIngreso;
+    }
+
+    public static Estudiante fromTexto(String linea) {
+        String[] partes = linea.split("\\|");
+        return new Estudiante(partes[0], partes[1], partes[2], Integer.parseInt(partes[3]));
+    }
 }
 

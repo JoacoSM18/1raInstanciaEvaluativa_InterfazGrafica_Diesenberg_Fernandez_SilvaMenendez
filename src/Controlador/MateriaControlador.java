@@ -14,26 +14,25 @@ import java.util.ArrayList;
  */
 public class MateriaControlador {
     private MateriaDAO dao;
-
+    private ArrayList<Materia> materias;
+    
     public MateriaControlador() {
         dao = new MateriaDAO();
+        materias = dao.leerTodas();
     }
 
-    public void agregarMateria(String nombre, String codigo,
-                               int cuatrimestre, int anio) {
-
+    public void agregarMateria(String nombre, String codigo, int cuatrimestre, int anio) {
         Materia m = new Materia();
-
         m.setNombre(nombre);
         m.setCodigo(codigo);
         m.setCuatrimestre(cuatrimestre);
         m.setAnio(anio);
-
-        dao.guardar(m);
+        materias.add(m);
+        dao.guardarTodas(materias);
     }
-    
+
     public ArrayList<Materia> listarMaterias() {
-        return dao.listar();
+        return materias;
     }
 
     public Materia buscarMateria(String codigo) {

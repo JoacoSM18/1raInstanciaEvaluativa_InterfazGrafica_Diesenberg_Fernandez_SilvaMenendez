@@ -13,7 +13,6 @@ import java.util.ArrayList;
  */
 
     public class Materia implements Consultable, Evaluable {
-    //3 Clase Materia
     
     String nombre;
     String codigo;
@@ -63,12 +62,12 @@ import java.util.ArrayList;
     
     @Override
     public String getCondicion() {
-        return "Regular"; // podés cambiarlo después
+        return "Regular";
     }
 
     @Override
     public double getPromedio() {
-        return 0; // placeholder por ahora
+        return 0;
     }
     
     public String getCodigo() {

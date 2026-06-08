@@ -4,6 +4,8 @@
  */
 package dao;
 
+import java.io.*;
+import modelo.Materia;
 import java.util.ArrayList;
 import modelo.InscripcionMateria;
 /**
@@ -11,44 +13,56 @@ import modelo.InscripcionMateria;
  * @author Martina Diesenberg
  */
 public class InscripcionDAO {
-    private ArrayList<InscripcionMateria> inscripciones;
-
-    public InscripcionDAO() {
-        inscripciones = new ArrayList<>();
-    }
-
-    public void guardar(InscripcionMateria inscripcion) {
-        inscripciones.add(inscripcion);
-    }
-
-    public ArrayList<InscripcionMateria> listar() {
+    private String archivo = "inscripciones.txt";
+    public ArrayList<InscripcionMateria> leerTodas(ArrayList<Materia> materias) {
+        ArrayList<InscripcionMateria> inscripciones = new ArrayList<>();
+        File f = new File(archivo);
+        if (!f.exists()) return inscripciones;
+        try (BufferedReader br = new BufferedReader(new FileReader(f))) {
+            String linea;
+            while ((linea = br.readLine()) != null) {
+                if (!linea.isEmpty()) {
+                    String codigoMateria = linea.split("\\|")[0];
+                    Materia materia = buscarMateria(codigoMateria, materias);
+                    if (materia != null) {
+                        inscripciones.add(InscripcionMateria.fromTexto(linea, materia));
+                    }
+                }
+            }
+        } catch (IOException e) {
+            System.out.println("Error leyendo inscripciones: " + e.getMessage());
+        }
         return inscripciones;
     }
 
-    public InscripcionMateria buscar(String codigoMateria) {
-
-        for (InscripcionMateria i : inscripciones) {
-
-            if (i.getMateria().getCodigo().equalsIgnoreCase(codigoMateria)) {
-                return i;
+    public void guardarTodas(ArrayList<InscripcionMateria> inscripciones) {
+        try (PrintWriter pw = new PrintWriter(new FileWriter(archivo))) {
+            for (InscripcionMateria im : inscripciones) {
+                pw.println(im.toTexto());
             }
-
+        } catch (IOException e) {
+            System.out.println("Error guardando inscripciones: " + e.getMessage());
         }
-        return null;
     }
 
-    public boolean eliminar(String codigoMateria) {
-
-        for (InscripcionMateria i : inscripciones) {
-
-            if (i.getMateria().getCodigo().equalsIgnoreCase(codigoMateria)) {
-                inscripciones.remove(i);
+    public boolean eliminar(String codigoMateria, ArrayList<InscripcionMateria> inscripciones) {
+        for (InscripcionMateria im : inscripciones) {
+            if (im.getMateria().getCodigo().equalsIgnoreCase(codigoMateria)) {
+                inscripciones.remove(im);
+                guardarTodas(inscripciones);
                 return true;
             }
-
         }
-
         return false;
+    }
+
+    private Materia buscarMateria(String codigo, ArrayList<Materia> materias) {
+        for (Materia m : materias) {
+            if (m.getCodigo().equalsIgnoreCase(codigo)) {
+                return m;
+            }
+        }
+        return null;
     }
 }
 

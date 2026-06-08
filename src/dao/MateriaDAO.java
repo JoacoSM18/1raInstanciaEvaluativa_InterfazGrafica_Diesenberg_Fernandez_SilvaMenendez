@@ -4,6 +4,7 @@
  */
 package dao;
 
+import java.io.*;
 import java.util.ArrayList;
 import modelo.Materia;
 /**
@@ -11,42 +12,52 @@ import modelo.Materia;
  * @author Martina Diesenberg
  */
 public class MateriaDAO {
-     private ArrayList<Materia> materias;
-
-    public MateriaDAO() {
-        materias = new ArrayList<>();
-    }
-
-    public void guardar(Materia materia) {
-        materias.add(materia);
-    }
-
-    public ArrayList<Materia> listar() {
+    private String archivo = "materias.txt";
+    public ArrayList<Materia> leerTodas() {
+        ArrayList<Materia> materias = new ArrayList<>();
+        File f = new File(archivo);
+        if (!f.exists()) return materias;
+        try (BufferedReader br = new BufferedReader(new FileReader(f))) {
+            String linea;
+            while ((linea = br.readLine()) != null) {
+                if (!linea.isEmpty()) {
+                    materias.add(Materia.fromTexto(linea));
+                }
+            }
+        }catch (IOException e) {
+            System.out.println("Error leyendo materias: " + e.getMessage());
+        }
         return materias;
     }
 
-    public Materia buscar(String busqueda) {
+    public void guardarTodas(ArrayList<Materia> materias) {
+        try (PrintWriter pw = new PrintWriter(new FileWriter(archivo))) {
+            for (Materia m : materias) {
+                pw.println(m.toTexto());
+            }
+        } catch (IOException e) {
+            System.out.println("Error Guardando Materias: " + e.getMessage());
+        }
+    }
 
-        for (Materia m : materias) {
-
-            if (m.getCodigo().equalsIgnoreCase(busqueda)) {
+    public Materia buscar(String codigo) {
+        for (Materia m : leerTodas()) {
+            if (m.getCodigo().equalsIgnoreCase(codigo)) {
                 return m;
             }
-
         }
-           return null;
+        return null;
     }
+
     public boolean eliminar(String codigo) {
-
+        ArrayList<Materia> materias = leerTodas();
         for (Materia m : materias) {
-
             if (m.getCodigo().equalsIgnoreCase(codigo)) {
                 materias.remove(m);
+                guardarTodas(materias);
                 return true;
             }
-
         }
-
         return false;
     }
 }
