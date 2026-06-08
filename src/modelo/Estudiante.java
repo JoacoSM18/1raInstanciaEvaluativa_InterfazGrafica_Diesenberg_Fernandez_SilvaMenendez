@@ -74,5 +74,9 @@ public class Estudiante extends PersonaAcademica {
         }
         return criticas;
     }
+    
+    public ArrayList<InscripcionMateria> getMaterias() {
+        return materias;
+    }
 }
 

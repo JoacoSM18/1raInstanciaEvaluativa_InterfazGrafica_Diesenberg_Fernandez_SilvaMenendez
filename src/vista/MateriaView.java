@@ -4,19 +4,46 @@
  */
 package vista;
 
+import javax.swing.DefaultListModel;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.JLabel;
+import javax.swing.JProgressBar;
+import modelo.Estudiante;
+import modelo.InscripcionMateria;
+import modelo.Materia;
+import javax.swing.JOptionPane;
+
 /**
  *
  * @author Martina Diesenberg
  */
 public class MateriaView extends javax.swing.JFrame {
     
+    private Estudiante estudiante;
+    private DefaultTableModel modeloTabla;
+    private DefaultListModel<String> modeloLista;
+    
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(MateriaView.class.getName());
 
     /**
      * Creates new form MateriaView
      */
-    public MateriaView() {
+    public MateriaView(Estudiante estudiante) {
         initComponents();
+        this.estudiante = estudiante;
+
+        lblUsuarioYLegajo.setText("Alumno: " + estudiante.getNombre() + " | Legajo: " + estudiante.getLegajo());
+
+        modeloTabla = new DefaultTableModel(new String[]{"Materia", "Condicion", "Promedio"}, 0) {
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
+        jTable1.setModel(modeloTabla);
+
+        modeloLista = new DefaultListModel<>();
+
+        actualizarVistas();
     }
 
     /**
@@ -36,16 +63,7 @@ public class MateriaView extends javax.swing.JFrame {
         jTable1 = new javax.swing.JTable();
         lblPromedio = new javax.swing.JLabel();
         jPanel5 = new javax.swing.JPanel();
-        jProgressBar1 = new javax.swing.JProgressBar();
-        jProgressBar2 = new javax.swing.JProgressBar();
-        jProgressBar3 = new javax.swing.JProgressBar();
-        jProgressBar4 = new javax.swing.JProgressBar();
-        lblMatematica = new javax.swing.JLabel();
-        lblProgramacion = new javax.swing.JLabel();
-        lblFisica = new javax.swing.JLabel();
-        lblQuimica = new javax.swing.JLabel();
         jScrollPane3 = new javax.swing.JScrollPane();
-        jList1 = new javax.swing.JList<>();
         jPanel6 = new javax.swing.JPanel();
         btnInscribir = new javax.swing.JButton();
         btnRegistrarAsistencia = new javax.swing.JButton();
@@ -99,63 +117,19 @@ public class MateriaView extends javax.swing.JFrame {
 
         jTabbedPane1.addTab("Materias", jPanel4);
 
-        lblMatematica.setText("Matemática I");
-
-        lblProgramacion.setText("Programación II");
-
-        lblFisica.setText("Física I");
-
-        lblQuimica.setText("Química");
-
-        jList1.setModel(new javax.swing.AbstractListModel<String>() {
-            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
-            public int getSize() { return strings.length; }
-            public String getElementAt(int i) { return strings[i]; }
-        });
-        jScrollPane3.setViewportView(jList1);
-
         javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
         jPanel5.setLayout(jPanel5Layout);
         jPanel5Layout.setHorizontalGroup(
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel5Layout.createSequentialGroup()
                 .addGap(64, 64, 64)
-                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(jPanel5Layout.createSequentialGroup()
-                        .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(lblFisica, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(lblMatematica, javax.swing.GroupLayout.PREFERRED_SIZE, 112, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(lblProgramacion, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(lblQuimica, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(118, 118, 118)
-                        .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jProgressBar4, javax.swing.GroupLayout.PREFERRED_SIZE, 225, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jProgressBar3, javax.swing.GroupLayout.PREFERRED_SIZE, 225, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jProgressBar2, javax.swing.GroupLayout.PREFERRED_SIZE, 225, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jProgressBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 225, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addContainerGap(237, Short.MAX_VALUE))
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(597, Short.MAX_VALUE))
         );
         jPanel5Layout.setVerticalGroup(
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel5Layout.createSequentialGroup()
-                .addGap(66, 66, 66)
-                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jProgressBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 13, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(lblMatematica))
-                .addGap(39, 39, 39)
-                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jProgressBar2, javax.swing.GroupLayout.PREFERRED_SIZE, 13, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(lblProgramacion))
-                .addGap(33, 33, 33)
-                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jProgressBar3, javax.swing.GroupLayout.PREFERRED_SIZE, 13, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(lblFisica))
-                .addGap(37, 37, 37)
-                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jProgressBar4, javax.swing.GroupLayout.PREFERRED_SIZE, 13, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(lblQuimica))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 42, Short.MAX_VALUE)
+                .addContainerGap(281, Short.MAX_VALUE)
                 .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 134, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18))
         );
@@ -209,7 +183,7 @@ public class MateriaView extends javax.swing.JFrame {
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 756, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(lblUsuarioYLegajo, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(lblUsuarioYLegajo, javax.swing.GroupLayout.PREFERRED_SIZE, 439, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(19, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -247,7 +221,79 @@ public class MateriaView extends javax.swing.JFrame {
         //</editor-fold>
 
         /* Create and display the form */
-        java.awt.EventQueue.invokeLater(() -> new MateriaView().setVisible(true));
+        java.awt.EventQueue.invokeLater(() -> {
+        Estudiante e = new Estudiante("Martina", "12345", "Informatica", 2022);
+
+        // Materia 1
+        Materia m1 = new Materia();
+        m1.setNombre("Matematica I");
+        m1.setCodigo("MAT");
+        e.inscribirse(m1, 20);
+        e.getInscripcion("MAT").registrarAsistencia(true);
+        e.getInscripcion("MAT").registrarAsistencia(true);
+        e.getInscripcion("MAT").agregarNota(8.0);
+
+        // Materia 2
+        Materia m2 = new Materia();
+        m2.setNombre("Programacion II");
+        m2.setCodigo("PRO");
+        e.inscribirse(m2, 20);
+        e.getInscripcion("PRO").registrarAsistencia(true);
+        e.getInscripcion("PRO").agregarNota(6.5);
+
+        new MateriaView(e).setVisible(true);
+    });
+    
+        
+    
+    }
+    public void actualizarVistas() {
+        actualizarTabla();
+        actualizarAsistencia();
+        actualizarLista();
+    }
+
+    private void actualizarTabla() {
+        modeloTabla.setRowCount(0);
+        for (InscripcionMateria im : estudiante.getMaterias()) {
+            modeloTabla.addRow(new Object[]{
+                im.getMateria().getNombre(),
+                im.getCondicion(),
+                String.format("%.2f", im.getPromedio())
+            });
+        }
+        lblPromedio.setText("Promedio General: " + String.format("%.2f", estudiante.getPromedioGeneral()));
+    }
+
+    private void actualizarAsistencia() {
+        jPanel5.removeAll();
+        jPanel5.setLayout(new javax.swing.BoxLayout(jPanel5, javax.swing.BoxLayout.Y_AXIS));
+
+        for (InscripcionMateria im : estudiante.getMaterias()) {
+            JLabel lbl = new JLabel(im.getMateria().getNombre());
+            lbl.setAlignmentX(java.awt.Component.LEFT_ALIGNMENT);
+
+            JProgressBar bar = new JProgressBar(0, 100);
+            bar.setValue((int) im.getPorcentajeAsistencia());
+            bar.setStringPainted(true);
+            bar.setMaximumSize(new java.awt.Dimension(Integer.MAX_VALUE, 20));
+            bar.setAlignmentX(java.awt.Component.LEFT_ALIGNMENT);
+
+            jPanel5.add(lbl);
+            jPanel5.add(bar);
+            jPanel5.add(javax.swing.Box.createVerticalStrut(8));
+        }
+
+        jPanel5.revalidate();
+        jPanel5.repaint();
+    }
+
+    private void actualizarLista() {
+        modeloLista.clear();
+        for (InscripcionMateria im : estudiante.getMateriasCriticas()) {
+            modeloLista.addElement(im.getMateria().getNombre() + " — " +
+                String.format("%.0f", im.getPorcentajeAsistencia()) + "%");
+        }
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -257,24 +303,14 @@ public class MateriaView extends javax.swing.JFrame {
     private javax.swing.JButton btnRegistrarNota;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JList<String> jList1;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
     private javax.swing.JPanel jPanel6;
-    private javax.swing.JProgressBar jProgressBar1;
-    private javax.swing.JProgressBar jProgressBar2;
-    private javax.swing.JProgressBar jProgressBar3;
-    private javax.swing.JProgressBar jProgressBar4;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JTable jTable1;
-    private javax.swing.JLabel lblFisica;
-    private javax.swing.JLabel lblMatematica;
-    private javax.swing.JLabel lblProgramacion;
     private javax.swing.JLabel lblPromedio;
-    private javax.swing.JLabel lblQuimica;
     private javax.swing.JLabel lblUsuarioYLegajo;
     // End of variables declaration//GEN-END:variables
 }
