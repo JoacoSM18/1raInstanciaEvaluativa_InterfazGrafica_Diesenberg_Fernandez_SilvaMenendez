@@ -19,8 +19,8 @@ public class EstudianteControlador {
     private ArrayList<Materia> materias;
     private ArrayList<InscripcionMateria> inscripciones;
     private EstudianteDAO estudianteDAO;
-    private MateriaDAO materiaDAO;
-    private InscripcionDAO inscripcionDAO;
+    public MateriaDAO materiaDAO;
+    public InscripcionDAO inscripcionDAO;
     public EstudianteControlador(Estudiante estudiante) {
         this.estudianteDAO = new EstudianteDAO();
         this.materiaDAO = new MateriaDAO();

@@ -369,7 +369,7 @@ public class MateriaView extends javax.swing.JFrame {
     
     private void btnRegistrarAsistenciaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRegistrarAsistenciaActionPerformed
         // TODO add your handling code here:
-        int fila = jTable1.getSelectedRow();
+         int fila = jTable1.getSelectedRow();
         if (fila < 0) {
             JOptionPane.showMessageDialog(this, "Seleccione una materia en la tabla primero.");
             return;
@@ -377,15 +377,13 @@ public class MateriaView extends javax.swing.JFrame {
         String nombre = (String) jTable1.getValueAt(fila, 0);
         InscripcionMateria im = buscarPorNombre(nombre);
         if (im == null) return;
-
         int respuesta = JOptionPane.showConfirmDialog(this, "¿Estuvo presente en " + nombre + "?", "Asistencia", JOptionPane.YES_NO_OPTION);
-        im.registrarAsistencia(respuesta == JOptionPane.YES_OPTION);
+        controlador.registrarAsistencia(im.getMateria().getCodigo(), respuesta == JOptionPane.YES_OPTION);
         if (im.getPorcentajeAsistencia() < 75) {
             JOptionPane.showMessageDialog(this, "Atención: perdiste la regularidad en " + nombre, "Alerta", JOptionPane.WARNING_MESSAGE);
         } else if (im.getPorcentajeAsistencia() <= 85) {
             JOptionPane.showMessageDialog(this, "Atención: asistencia en zona de riesgo en " + nombre, "Alerta", JOptionPane.WARNING_MESSAGE);
         }
-        new dao.EstudianteDAO().guardar(estudiante);
         actualizarVistas();
     }//GEN-LAST:event_btnRegistrarAsistenciaActionPerformed
 
@@ -398,7 +396,6 @@ public class MateriaView extends javax.swing.JFrame {
         String clasesStr = JOptionPane.showInputDialog("Total de clases:");
         if (clasesStr == null) return;
         controlador.inscribirMateria(nombre, codigo, 1, 2024, Integer.parseInt(clasesStr));
-        this.estudiante = controlador.getEstudiante();
         actualizarVistas();
         
     }//GEN-LAST:event_btnInscribirActionPerformed
@@ -422,8 +419,7 @@ public class MateriaView extends javax.swing.JFrame {
 
         String notaStr = JOptionPane.showInputDialog("Ingrese la nota (0-10):");
         if (notaStr == null) return;
-        im.agregarNota(Double.parseDouble(notaStr));
-        new dao.EstudianteDAO().guardar(estudiante);
+        controlador.registrarNota(im.getMateria().getCodigo(), Double.parseDouble(notaStr));
         actualizarVistas();
     }//GEN-LAST:event_btnRegistrarNotaActionPerformed
 
@@ -438,8 +434,8 @@ public class MateriaView extends javax.swing.JFrame {
         int confirm = JOptionPane.showConfirmDialog(this, "¿Seguro que querés dar de baja " + nombre + "?", "Confirmar", JOptionPane.YES_NO_OPTION);
         if (confirm == JOptionPane.YES_OPTION) {
             InscripcionMateria im = buscarPorNombre(nombre);
-            if (im != null) estudiante.darDeBaja(im.getMateria().getCodigo());
-            new dao.EstudianteDAO().guardar(estudiante);
+            if (im != null) 
+                controlador.darDeBaja(im.getMateria().getCodigo());
             actualizarVistas();
         }
     }//GEN-LAST:event_btnBajaActionPerformed
@@ -477,6 +473,8 @@ public class MateriaView extends javax.swing.JFrame {
     JOptionPane.showMessageDialog(this, sb.toString(), "Aprobadas", JOptionPane.INFORMATION_MESSAGE);
     }//GEN-LAST:event_jMenuItem3ActionPerformed
 
+    
+    
     private void btnGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarActionPerformed
         // TODO add your handling code here:
         int fila = jTable1.getSelectedRow();
