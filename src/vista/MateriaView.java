@@ -108,6 +108,9 @@ public class MateriaView extends javax.swing.JFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
         lblPromedio = new javax.swing.JLabel();
+        jLabel3 = new javax.swing.JLabel();
+        txtMateria = new javax.swing.JTextField();
+        btnBuscar = new javax.swing.JButton();
         jPanel5 = new javax.swing.JPanel();
         jScrollPane3 = new javax.swing.JScrollPane();
         jPanel6 = new javax.swing.JPanel();
@@ -130,6 +133,8 @@ public class MateriaView extends javax.swing.JFrame {
         jMenuItem1 = new javax.swing.JMenuItem();
         jMenuItem2 = new javax.swing.JMenuItem();
         jMenuItem3 = new javax.swing.JMenuItem();
+        jMenuItemEstadisticas = new javax.swing.JCheckBoxMenuItem();
+        jMenuItemRiesgo = new javax.swing.JMenuItem();
 
         jLabel1.setText("jLabel1");
 
@@ -156,6 +161,13 @@ public class MateriaView extends javax.swing.JFrame {
 
         lblPromedio.setText("Promedio General: ");
 
+        jLabel3.setText("Buscar Materia:");
+
+        txtMateria.setText("Matematica I");
+
+        btnBuscar.setText("Buscar");
+        btnBuscar.addActionListener(this::btnBuscarActionPerformed);
+
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
         jPanel4Layout.setHorizontalGroup(
@@ -163,6 +175,12 @@ public class MateriaView extends javax.swing.JFrame {
             .addGroup(jPanel4Layout.createSequentialGroup()
                 .addGap(70, 70, 70)
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addComponent(jLabel3)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(txtMateria, javax.swing.GroupLayout.PREFERRED_SIZE, 186, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnBuscar))
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 597, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(lblPromedio, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(89, Short.MAX_VALUE))
@@ -170,7 +188,12 @@ public class MateriaView extends javax.swing.JFrame {
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
-                .addContainerGap(47, Short.MAX_VALUE)
+                .addContainerGap(12, Short.MAX_VALUE)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel3)
+                    .addComponent(txtMateria, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnBuscar))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 161, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(31, 31, 31)
                 .addComponent(lblPromedio, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -329,6 +352,15 @@ public class MateriaView extends javax.swing.JFrame {
         jMenuItem3.setText("Aprobadas");
         jMenuItem3.addActionListener(this::jMenuItem3ActionPerformed);
         jMenu2.add(jMenuItem3);
+
+        jMenuItemEstadisticas.setSelected(true);
+        jMenuItemEstadisticas.setText("Estadísticas de Aprobadas");
+        jMenuItemEstadisticas.addActionListener(this::jMenuItemEstadisticasActionPerformed);
+        jMenu2.add(jMenuItemEstadisticas);
+
+        jMenuItemRiesgo.setText("Materias en Riesgo Ordenadas");
+        jMenuItemRiesgo.addActionListener(this::jMenuItemRiesgoActionPerformed);
+        jMenu2.add(jMenuItemRiesgo);
 
         jMenuBar1.add(jMenu2);
 
@@ -496,6 +528,141 @@ public class MateriaView extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_btnGuardarActionPerformed
 
+    private void jMenuItemEstadisticasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemEstadisticasActionPerformed
+    
+    double max = Double.MIN_VALUE;
+    double min = Double.MAX_VALUE;
+    double suma = 0;
+    int cantidad = 0;
+
+    for (InscripcionMateria im : estudiante.getMaterias()) {
+
+    if (im.estaAprobada()) {
+
+        double nota = im.getPromedio();
+
+        if (nota > max) max = nota;
+        if (nota < min) min = nota;
+
+        suma += nota;
+        cantidad++;
+    }
+    }
+
+    if (cantidad == 0) {
+        JOptionPane.showMessageDialog(
+                this,
+                "No hay materias aprobadas."
+        );
+        return;
+    }
+
+    double promedio = suma / cantidad;
+
+    String mensaje =
+        "Nota máxima: " + String.format("%.2f", max)
+        + "\nNota mínima: " + String.format("%.2f", min)
+        + "\nPromedio: " + String.format("%.2f", promedio);
+
+    JOptionPane.showMessageDialog(
+        this,
+        mensaje,
+        "Estadísticas",
+        JOptionPane.INFORMATION_MESSAGE
+    );
+    }//GEN-LAST:event_jMenuItemEstadisticasActionPerformed
+
+    private void jMenuItemRiesgoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemRiesgoActionPerformed
+    java.util.ArrayList<InscripcionMateria> riesgo = new java.util.ArrayList<>();
+
+    for (InscripcionMateria im : estudiante.getMaterias()) {
+
+    double asistencia = im.getPorcentajeAsistencia();
+
+    if (asistencia >= 75 && asistencia <= 85) {
+        riesgo.add(im);
+        }
+    }
+
+    riesgo.sort((a, b) ->
+        Double.compare(
+                a.getPorcentajeAsistencia(),
+                b.getPorcentajeAsistencia()
+        )
+    );
+
+    StringBuilder sb = new StringBuilder();
+
+    for (InscripcionMateria im : riesgo) {
+
+    sb.append(im.getMateria().getNombre())
+      .append(" - ")
+      .append(String.format("%.0f%%",
+              im.getPorcentajeAsistencia()))
+      .append("\n");
+    }
+
+    if (riesgo.isEmpty()) {
+    sb.append("No hay materias en riesgo.");
+    }
+
+    JOptionPane.showMessageDialog(
+        this,
+        sb.toString(),
+        "Materias en Riesgo",
+        JOptionPane.INFORMATION_MESSAGE
+    );
+    }//GEN-LAST:event_jMenuItemRiesgoActionPerformed
+
+    private void btnBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBuscarActionPerformed
+
+    String buscar = txtMateria.getText().trim();
+
+    if (buscar.isEmpty()) {
+        JOptionPane.showMessageDialog(this,
+                "Ingrese un nombre o código.");
+        return;
+    }
+
+    for (int i = 0; i < jTable1.getRowCount(); i++) {
+
+        String nombre = jTable1.getValueAt(i, 0).toString();
+
+        if (nombre.equalsIgnoreCase(buscar)) {
+
+            jTable1.setRowSelectionInterval(i, i);
+
+            jTable1.scrollRectToVisible(
+                    jTable1.getCellRect(i, 0, true)
+            );
+
+            return;
+        }
+    }
+
+    for (int i = 0; i < estudiante.getMaterias().size(); i++) {
+
+        InscripcionMateria im = estudiante.getMaterias().get(i);
+
+        if (im.getMateria().getCodigo() != null
+                && im.getMateria().getCodigo().equalsIgnoreCase(buscar)) {
+
+            jTable1.setRowSelectionInterval(i, i);
+
+            jTable1.scrollRectToVisible(
+                    jTable1.getCellRect(i, 0, true)
+            );
+
+            return;
+        }
+    }
+
+    JOptionPane.showMessageDialog(
+            this,
+            "Materia no encontrada."
+    );       
+    }//GEN-LAST:event_btnBuscarActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -632,12 +799,14 @@ public class MateriaView extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnBaja;
+    private javax.swing.JButton btnBuscar;
     private javax.swing.JButton btnGuardar;
     private javax.swing.JButton btnInscribir;
     private javax.swing.JButton btnRegistrarAsistencia;
     private javax.swing.JButton btnRegistrarNota;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenuBar jMenuBar1;
@@ -645,6 +814,8 @@ public class MateriaView extends javax.swing.JFrame {
     private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JMenuItem jMenuItem3;
     private javax.swing.JMenuItem jMenuItem4;
+    private javax.swing.JCheckBoxMenuItem jMenuItemEstadisticas;
+    private javax.swing.JMenuItem jMenuItemRiesgo;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
@@ -659,6 +830,7 @@ public class MateriaView extends javax.swing.JFrame {
     private javax.swing.JLabel lblPromedio;
     private javax.swing.JLabel lblUsuarioYLegajo;
     private javax.swing.JTextField txtCodigo;
+    private javax.swing.JTextField txtMateria;
     private javax.swing.JTextField txtNombre;
     // End of variables declaration//GEN-END:variables
 }
