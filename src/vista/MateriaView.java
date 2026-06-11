@@ -38,8 +38,6 @@ public class MateriaView extends javax.swing.JFrame {
         initComponents();
         this.controlador = new Controlador.EstudianteControlador(estudiante);
         this.estudiante = estudiante;
-        controlador = new Controlador.EstudianteControlador(estudiante);
-        
         lblUsuarioYLegajo.setText("Alumno: " + estudiante.getNombre() + " | Legajo: " + estudiante.getLegajo());
 
         modeloTabla = new DefaultTableModel(new String[]{"Materia", "Condicion", "Asistencia %", "Promedio"}, 0) {
@@ -235,8 +233,6 @@ public class MateriaView extends javax.swing.JFrame {
 
         jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("Editar Materia"));
 
-        txtNombre.setEditable(false);
-
         txtCodigo.setEditable(false);
 
         btnGuardar.setText("Guardar cambios");
@@ -318,10 +314,13 @@ public class MateriaView extends javax.swing.JFrame {
                 .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnInscribir, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnRegistrarNota, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(35, 35, 35)
-                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnBaja, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnRegistrarAsistencia, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel6Layout.createSequentialGroup()
+                        .addGap(35, 35, 35)
+                        .addComponent(btnBaja, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel6Layout.createSequentialGroup()
+                        .addGap(18, 18, 18)
+                        .addComponent(btnRegistrarAsistencia, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(39, 39, 39)
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(45, 45, 45))
@@ -391,7 +390,7 @@ public class MateriaView extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private InscripcionMateria buscarPorNombre(String nombre) {
-        for (InscripcionMateria im : estudiante.getMaterias()) {
+        for (InscripcionMateria im : controlador.getInscripciones()) {
             if (im.getMateria().getNombre().equals(nombre)) {
                 return im;
             }
@@ -409,12 +408,24 @@ public class MateriaView extends javax.swing.JFrame {
         String nombre = (String) jTable1.getValueAt(fila, 0);
         InscripcionMateria im = buscarPorNombre(nombre);
         if (im == null) return;
+
         int respuesta = JOptionPane.showConfirmDialog(this, "¿Estuvo presente en " + nombre + "?", "Asistencia", JOptionPane.YES_NO_OPTION);
         controlador.registrarAsistencia(im.getMateria().getCodigo(), respuesta == JOptionPane.YES_OPTION);
-        if (im.getPorcentajeAsistencia() < 75) {
-            JOptionPane.showMessageDialog(this, "Atención: perdiste la regularidad en " + nombre, "Alerta", JOptionPane.WARNING_MESSAGE);
-        } else if (im.getPorcentajeAsistencia() <= 85) {
-            JOptionPane.showMessageDialog(this, "Atención: asistencia en zona de riesgo en " + nombre, "Alerta", JOptionPane.WARNING_MESSAGE);
+
+        InscripcionMateria imActualizado = null;
+        for (InscripcionMateria x : controlador.getInscripciones()) {
+            if (x.getMateria().getCodigo().equals(im.getMateria().getCodigo())) {
+                imActualizado = x;
+                break;
+            }
+        }
+
+        if (imActualizado != null) {
+            if (imActualizado.getPorcentajeAsistencia() < 75) {
+                JOptionPane.showMessageDialog(this, "Atención: perdiste la regularidad en " + nombre, "Alerta", JOptionPane.WARNING_MESSAGE);
+            } else if (imActualizado.getPorcentajeAsistencia() <= 85) {
+                JOptionPane.showMessageDialog(this, "Atención: asistencia en zona de riesgo en " + nombre, "Alerta", JOptionPane.WARNING_MESSAGE);
+            }
         }
         actualizarVistas();
     }//GEN-LAST:event_btnRegistrarAsistenciaActionPerformed
@@ -428,6 +439,7 @@ public class MateriaView extends javax.swing.JFrame {
         String clasesStr = JOptionPane.showInputDialog("Total de clases:");
         if (clasesStr == null) return;
         controlador.inscribirMateria(nombre, codigo, 1, 2024, Integer.parseInt(clasesStr));
+        this.estudiante = controlador.getEstudiante();
         actualizarVistas();
         
     }//GEN-LAST:event_btnInscribirActionPerformed
@@ -481,18 +493,41 @@ public class MateriaView extends javax.swing.JFrame {
     private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
         // TODO add your handling code here:
          StringBuilder sb = new StringBuilder("Materias en riesgo:\n");
-        for (InscripcionMateria im : estudiante.getMateriasCriticas()) {
-            sb.append("- ").append(im.getMateria().getNombre())
-              .append(" (").append(String.format("%.0f", im.getPorcentajeAsistencia())).append("%)\n");
+        boolean hay = false;
+
+        for (InscripcionMateria im : controlador.getInscripciones()) {
+
+            double asistencia = im.getPorcentajeAsistencia();
+
+            if (asistencia >= 75 && asistencia <= 85) {
+
+                sb.append("- ")
+                  .append(im.getMateria().getNombre())
+                  .append(" (")
+                  .append(String.format("%.0f", asistencia))
+                  .append("%)\n");
+
+                hay = true;
+            }
         }
-        JOptionPane.showMessageDialog(this, sb.toString(), "Materias en riesgo", JOptionPane.WARNING_MESSAGE);
+
+        if (!hay) {
+            sb.append("No hay materias en riesgo.");
+        }
+
+        JOptionPane.showMessageDialog(
+            this,
+            sb.toString(),
+            "Materias en riesgo",
+            JOptionPane.WARNING_MESSAGE
+        );
     }//GEN-LAST:event_jMenuItem2ActionPerformed
 
     private void jMenuItem3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem3ActionPerformed
         // TODO add your handling code here:
         StringBuilder sb = new StringBuilder("Materias aprobadas:\n");
     boolean hayAprobadas = false;
-    for (InscripcionMateria im : estudiante.getMaterias()) {
+    for (InscripcionMateria im : controlador.getInscripciones()) {
         if (im.estaAprobada()) {
             sb.append("- ").append(im.getMateria().getNombre())
               .append(" (promedio: ").append(String.format("%.2f", im.getPromedio())).append(")\n");
@@ -686,25 +721,24 @@ public class MateriaView extends javax.swing.JFrame {
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(() -> {
-        Estudiante e = new Estudiante("Martina", "12345", "Informatica", 2022);
-
-        // Materia 1
-        Materia m1 = new Materia();
-        m1.setNombre("Matematica I");
-        m1.setCodigo("MAT");
-        e.inscribirse(m1, 10);
-        for (int i = 0; i < 8; i++) e.getInscripcion("MAT").registrarAsistencia(true);
-        for (int i = 0; i < 2; i++) e.getInscripcion("MAT").registrarAsistencia(false);
-        e.getInscripcion("MAT").agregarNota(5.0);
-
-        // Materia 2
-        Materia m2 = new Materia();
-        m2.setNombre("Programacion II");
-        m2.setCodigo("PRO");
-        e.inscribirse(m2, 20);
-        e.getInscripcion("PRO").registrarAsistencia(true);
-        e.getInscripcion("PRO").agregarNota(6.5);
-
+        dao.EstudianteDAO daoE = new dao.EstudianteDAO();
+        Estudiante e = daoE.leer();
+        if (e == null) {
+            e = new Estudiante("Martina", "12345", "Informatica", 2022);
+            Materia m1 = new Materia();
+            m1.setNombre("Matematica I");
+            m1.setCodigo("MAT");
+            e.inscribirse(m1, 10);
+            for (int i = 0; i < 8; i++) e.getInscripcion("MAT").registrarAsistencia(true);
+            e.getInscripcion("MAT").agregarNota(8.0);
+            Materia m2 = new Materia();
+            m2.setNombre("Programacion II");
+            m2.setCodigo("PRO");
+            e.inscribirse(m2, 10);
+            for (int i = 0; i < 8; i++) e.getInscripcion("PRO").registrarAsistencia(true);
+            e.getInscripcion("PRO").agregarNota(6.5);
+            daoE.guardar(e);
+        }
         new MateriaView(e).setVisible(true);
     });
     
@@ -722,23 +756,23 @@ public class MateriaView extends javax.swing.JFrame {
 
     private void actualizarTabla() {
         modeloTabla.setRowCount(0);
-        for (InscripcionMateria im : estudiante.getMaterias()) {
+        for (InscripcionMateria im : controlador.getInscripciones()) {
             modeloTabla.addRow(new Object[]{
                 im.getMateria().getNombre(),
                 im.getCondicion(),
-                String.format("%.0f%%", im.getPorcentajeAsistencia()),  // columna nueva
+                String.format("%.0f%%", im.getPorcentajeAsistencia()),
                 String.format("%.2f", im.getPromedio())
             });
         }
-    lblPromedio.setText("Promedio General: " + String.format("%.2f", estudiante.getPromedioGeneral()));
-
+        lblPromedio.setText("Promedio General: " + String.format("%.2f", 
+            controlador.getEstudiante().getPromedioGeneral()));
     }
 
     private void actualizarAsistencia() {
         jPanel5.removeAll();
         jPanel5.setLayout(new javax.swing.BoxLayout(jPanel5, javax.swing.BoxLayout.Y_AXIS));
 
-        for (InscripcionMateria im : estudiante.getMaterias()) {
+        for (InscripcionMateria im : controlador.getInscripciones()) {
             JLabel lbl = new JLabel(im.getMateria().getNombre());
             lbl.setAlignmentX(java.awt.Component.LEFT_ALIGNMENT);
 
@@ -757,11 +791,14 @@ public class MateriaView extends javax.swing.JFrame {
         jPanel5.repaint();
     }
 
-    private void actualizarLista() {
+    private void actualizarLista() { 
         modeloLista.clear();
-        for (InscripcionMateria im : estudiante.getMateriasCriticas()) {
-            modeloLista.addElement(im.getMateria().getNombre() + " — " +
-                String.format("%.0f", im.getPorcentajeAsistencia()) + "%");
+        for (InscripcionMateria im : controlador.getInscripciones()) { 
+            double asistencia = im.getPorcentajeAsistencia();
+            if (asistencia >= 75 && asistencia <= 85) { 
+                modeloLista.addElement(im.getMateria().getNombre() + " — " + 
+                    String.format("%.0f", asistencia) + "%");
+            } 
         }
     }
     
@@ -772,7 +809,7 @@ public class MateriaView extends javax.swing.JFrame {
     };
 
     java.util.ArrayList<InscripcionMateria> riesgo = new java.util.ArrayList<>();
-    for (InscripcionMateria im : estudiante.getMaterias()) {
+    for (InscripcionMateria im : controlador.getInscripciones()) {
         double asistencia = im.getPorcentajeAsistencia();
         if (asistencia >= 75 && asistencia <= 85) {
             riesgo.add(im);
