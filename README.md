@@ -1,0 +1,7 @@
+Sistema de alertas y reportes
+El sistema clasifica las materias según dos criterios independientes: asistencia y rendimiento académico.
+Materias en riesgo son aquellas cuya asistencia se encuentra entre el 75% y el 85%. Esto significa que el alumno todavía mantiene la regularidad pero está cerca de perderla — si falta una clase más puede caer por debajo del 75% y quedar libre. Por eso el sistema las marca como "en riesgo": no están mal, pero requieren atención.
+Materias aprobadas son aquellas que cumplen dos condiciones al mismo tiempo: tener un promedio de notas mayor o igual a 6 y tener condición Regular (asistencia mayor o igual al 75%). Si una materia tiene buenas notas pero el alumno perdió la regularidad por faltas, no se considera aprobada.
+Materias libres son aquellas cuya asistencia cayó por debajo del 75%. En ese caso el alumno pierde la regularidad y el sistema muestra una alerta automática al registrar una nueva asistencia.
+¿Por qué una materia puede estar aprobada Y en riesgo al mismo tiempo? Porque son dos cosas distintas. Una materia está aprobada si tiene promedio ≥ 6 y asistencia ≥ 75%. Está en riesgo si la asistencia está entre 75% y 85%. O sea, puede tener buenas notas pero estar cerca de perder la regularidad — en ese caso aparece en ambas listas.
+¿Por qué una materia con 20% de asistencia no aparece en "materias en riesgo"? Porque ya está libre — perdió la regularidad. Riesgo significa que todavía es regular pero está cerca del límite. Si ya cayó por debajo del 75%, directamente aparece como Libre.
