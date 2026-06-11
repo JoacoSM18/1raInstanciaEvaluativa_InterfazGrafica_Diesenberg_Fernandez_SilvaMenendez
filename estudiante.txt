@@ -1,1 +1,3 @@
 Martina|12345|Informatica|2022
+MAT|10|8|8.0
+PRO|10|8|6.5

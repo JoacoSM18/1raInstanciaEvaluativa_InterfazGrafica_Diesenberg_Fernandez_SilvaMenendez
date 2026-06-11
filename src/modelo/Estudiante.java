@@ -35,13 +35,13 @@ public class Estudiante extends PersonaAcademica {
         materias.add(nueva);
     }
 
-    public void darDeBaja(String codigoMateria) {
+    public void darDeBaja(String nombreMateria) {
         for (int i = 0; i < materias.size(); i++) {
-            if (materias.get(i).getMateria().getCodigo().equals(codigoMateria)) {
-                materias.remove(i);
-                break;
-            }
+        if (materias.get(i).getMateria().getNombre().equals(nombreMateria)) {
+            materias.remove(i);
+            break;
         }
+    }
     }
 
     public InscripcionMateria getInscripcion(String codigoMateria) {

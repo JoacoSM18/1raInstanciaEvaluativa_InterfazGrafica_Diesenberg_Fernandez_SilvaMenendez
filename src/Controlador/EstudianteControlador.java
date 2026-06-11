@@ -28,7 +28,11 @@ public class EstudianteControlador {
         this.estudiante = estudiante;
         this.materias = materiaDAO.leerTodas();
         this.inscripciones = inscripcionDAO.leerTodas(materias);
+        
+        if (this.inscripciones.isEmpty()) {
+        this.inscripciones = estudiante.getMaterias();
     }
+}
     public Estudiante getEstudiante() {
         return estudiante;
     }

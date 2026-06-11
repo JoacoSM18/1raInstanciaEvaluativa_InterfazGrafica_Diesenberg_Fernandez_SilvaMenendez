@@ -390,17 +390,17 @@ public class MateriaView extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private InscripcionMateria buscarPorNombre(String nombre) {
-        for (InscripcionMateria im : controlador.getInscripciones()) {
-            if (im.getMateria().getNombre().equals(nombre)) {
-                return im;
-            }
+        for (InscripcionMateria im : estudiante.getMaterias()) {
+        if (im.getMateria().getNombre().equals(nombre)) {
+            return im;
         }
-        return null;
+    }
+    return null;
     }
     
     private void btnRegistrarAsistenciaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRegistrarAsistenciaActionPerformed
         // TODO add your handling code here:
-         int fila = jTable1.getSelectedRow();
+        int fila = jTable1.getSelectedRow();
         if (fila < 0) {
             JOptionPane.showMessageDialog(this, "Seleccione una materia en la tabla primero.");
             return;
@@ -408,25 +408,20 @@ public class MateriaView extends javax.swing.JFrame {
         String nombre = (String) jTable1.getValueAt(fila, 0);
         InscripcionMateria im = buscarPorNombre(nombre);
         if (im == null) return;
-
         int respuesta = JOptionPane.showConfirmDialog(this, "¿Estuvo presente en " + nombre + "?", "Asistencia", JOptionPane.YES_NO_OPTION);
-        controlador.registrarAsistencia(im.getMateria().getCodigo(), respuesta == JOptionPane.YES_OPTION);
-
-        InscripcionMateria imActualizado = null;
-        for (InscripcionMateria x : controlador.getInscripciones()) {
-            if (x.getMateria().getCodigo().equals(im.getMateria().getCodigo())) {
-                imActualizado = x;
-                break;
-            }
+        im.registrarAsistencia(respuesta == JOptionPane.YES_OPTION);
+        if (im.getPorcentajeAsistencia() < 75) {
+            JOptionPane.showMessageDialog(this, 
+                "Si la asistencia baja del 75% se pierde la regularidad. Asistencia actual: " + 
+                String.format("%.0f", im.getPorcentajeAsistencia()) + "%", 
+                "Alerta", JOptionPane.WARNING_MESSAGE);
+        } else if (im.getPorcentajeAsistencia() <= 85) {
+            JOptionPane.showMessageDialog(this, 
+                "Asistencia en zona de riesgo: " + String.format("%.0f", im.getPorcentajeAsistencia()) + 
+                "%. Si baja del 75% se pierde la regularidad.", 
+                "Alerta", JOptionPane.WARNING_MESSAGE);
         }
-
-        if (imActualizado != null) {
-            if (imActualizado.getPorcentajeAsistencia() < 75) {
-                JOptionPane.showMessageDialog(this, "Atención: perdiste la regularidad en " + nombre, "Alerta", JOptionPane.WARNING_MESSAGE);
-            } else if (imActualizado.getPorcentajeAsistencia() <= 85) {
-                JOptionPane.showMessageDialog(this, "Atención: asistencia en zona de riesgo en " + nombre, "Alerta", JOptionPane.WARNING_MESSAGE);
-            }
-        }
+        new dao.EstudianteDAO().guardar(estudiante);
         actualizarVistas();
     }//GEN-LAST:event_btnRegistrarAsistenciaActionPerformed
 
@@ -438,10 +433,13 @@ public class MateriaView extends javax.swing.JFrame {
         if (codigo == null || codigo.trim().isEmpty()) return;
         String clasesStr = JOptionPane.showInputDialog("Total de clases:");
         if (clasesStr == null) return;
-        controlador.inscribirMateria(nombre, codigo, 1, 2024, Integer.parseInt(clasesStr));
-        this.estudiante = controlador.getEstudiante();
+        Materia m = new Materia();
+        m.setNombre(nombre);
+        m.setCodigo(codigo);
+        estudiante.inscribirse(m, Integer.parseInt(clasesStr));
+        new dao.EstudianteDAO().guardar(estudiante);
         actualizarVistas();
-        
+
     }//GEN-LAST:event_btnInscribirActionPerformed
 
     private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
@@ -460,10 +458,10 @@ public class MateriaView extends javax.swing.JFrame {
         String nombre = (String) jTable1.getValueAt(fila, 0);
         InscripcionMateria im = buscarPorNombre(nombre);
         if (im == null) return;
-
         String notaStr = JOptionPane.showInputDialog("Ingrese la nota (0-10):");
         if (notaStr == null) return;
-        controlador.registrarNota(im.getMateria().getCodigo(), Double.parseDouble(notaStr));
+        im.agregarNota(Double.parseDouble(notaStr));
+        new dao.EstudianteDAO().guardar(estudiante);
         actualizarVistas();
     }//GEN-LAST:event_btnRegistrarNotaActionPerformed
 
@@ -477,11 +475,11 @@ public class MateriaView extends javax.swing.JFrame {
         String nombre = (String) jTable1.getValueAt(fila, 0);
         int confirm = JOptionPane.showConfirmDialog(this, "¿Seguro que querés dar de baja " + nombre + "?", "Confirmar", JOptionPane.YES_NO_OPTION);
         if (confirm == JOptionPane.YES_OPTION) {
-            InscripcionMateria im = buscarPorNombre(nombre);
-            if (im != null) 
-                controlador.darDeBaja(im.getMateria().getCodigo());
+            estudiante.darDeBaja(nombre);
+            new dao.EstudianteDAO().guardar(estudiante);
             actualizarVistas();
         }
+       
     }//GEN-LAST:event_btnBajaActionPerformed
 
     private void jMenuItem4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem4ActionPerformed
@@ -492,52 +490,38 @@ public class MateriaView extends javax.swing.JFrame {
 
     private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
         // TODO add your handling code here:
-         StringBuilder sb = new StringBuilder("Materias en riesgo:\n");
+        System.out.println("Materias del estudiante: " + estudiante.getMaterias().size());
+        for (InscripcionMateria im : estudiante.getMaterias()) {
+            System.out.println(im.getMateria().getNombre() + " - " + im.getPorcentajeAsistencia() + "% - aprobada: " + im.estaAprobada());
+        }
+
+        StringBuilder sb = new StringBuilder("Materias en riesgo:\n");
         boolean hay = false;
-
-        for (InscripcionMateria im : controlador.getInscripciones()) {
-
+        for (InscripcionMateria im : estudiante.getMaterias()) {
             double asistencia = im.getPorcentajeAsistencia();
-
             if (asistencia >= 75 && asistencia <= 85) {
-
-                sb.append("- ")
-                  .append(im.getMateria().getNombre())
-                  .append(" (")
-                  .append(String.format("%.0f", asistencia))
-                  .append("%)\n");
-
+                sb.append("- ").append(im.getMateria().getNombre())
+                  .append(" (").append(String.format("%.0f", asistencia)).append("%)\n");
                 hay = true;
             }
         }
-
-        if (!hay) {
-            sb.append("No hay materias en riesgo.");
-        }
-
-        JOptionPane.showMessageDialog(
-            this,
-            sb.toString(),
-            "Materias en riesgo",
-            JOptionPane.WARNING_MESSAGE
-        );
+        if (!hay) sb.append("No hay materias en riesgo.");
+        JOptionPane.showMessageDialog(this, sb.toString(), "Materias en riesgo", JOptionPane.WARNING_MESSAGE);
     }//GEN-LAST:event_jMenuItem2ActionPerformed
 
     private void jMenuItem3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem3ActionPerformed
         // TODO add your handling code here:
         StringBuilder sb = new StringBuilder("Materias aprobadas:\n");
-    boolean hayAprobadas = false;
-    for (InscripcionMateria im : controlador.getInscripciones()) {
-        if (im.estaAprobada()) {
-            sb.append("- ").append(im.getMateria().getNombre())
-              .append(" (promedio: ").append(String.format("%.2f", im.getPromedio())).append(")\n");
-            hayAprobadas = true;
+        boolean hayAprobadas = false;
+        for (InscripcionMateria im : estudiante.getMaterias()) {
+            if (im.estaAprobada()) {
+                sb.append("- ").append(im.getMateria().getNombre())
+                  .append(" (promedio: ").append(String.format("%.2f", im.getPromedio())).append(")\n");
+                hayAprobadas = true;
+            }
         }
-    }
-    if (!hayAprobadas) {
-        sb.append("No hay materias aprobadas.");
-    }
-    JOptionPane.showMessageDialog(this, sb.toString(), "Aprobadas", JOptionPane.INFORMATION_MESSAGE);
+        if (!hayAprobadas) sb.append("No hay materias aprobadas.");
+        JOptionPane.showMessageDialog(this, sb.toString(), "Aprobadas", JOptionPane.INFORMATION_MESSAGE);
     }//GEN-LAST:event_jMenuItem3ActionPerformed
 
     
@@ -739,11 +723,18 @@ public class MateriaView extends javax.swing.JFrame {
             e.getInscripcion("PRO").agregarNota(6.5);
             daoE.guardar(e);
         }
+        // sincronizar inscripciones con el archivo
+        dao.InscripcionDAO inscDao = new dao.InscripcionDAO();
+        inscDao.guardarTodas(e.getMaterias());
         new MateriaView(e).setVisible(true);
     });
     
         
     
+    }
+    
+    public Controlador.EstudianteControlador getControlador() {
+        return controlador;
     }
     public void actualizarVistas() {
         actualizarTabla();
@@ -752,11 +743,9 @@ public class MateriaView extends javax.swing.JFrame {
         actualizarReportes();
     }
     
-    
-
     private void actualizarTabla() {
         modeloTabla.setRowCount(0);
-        for (InscripcionMateria im : controlador.getInscripciones()) {
+        for (InscripcionMateria im : estudiante.getMaterias()) {
             modeloTabla.addRow(new Object[]{
                 im.getMateria().getNombre(),
                 im.getCondicion(),
@@ -764,44 +753,40 @@ public class MateriaView extends javax.swing.JFrame {
                 String.format("%.2f", im.getPromedio())
             });
         }
-        lblPromedio.setText("Promedio General: " + String.format("%.2f", 
-            controlador.getEstudiante().getPromedioGeneral()));
+        lblPromedio.setText("Promedio General: " + String.format("%.2f", estudiante.getPromedioGeneral()));
     }
 
     private void actualizarAsistencia() {
         jPanel5.removeAll();
         jPanel5.setLayout(new javax.swing.BoxLayout(jPanel5, javax.swing.BoxLayout.Y_AXIS));
-
-        for (InscripcionMateria im : controlador.getInscripciones()) {
+        for (InscripcionMateria im : estudiante.getMaterias()) {
             JLabel lbl = new JLabel(im.getMateria().getNombre());
             lbl.setAlignmentX(java.awt.Component.LEFT_ALIGNMENT);
-
             JProgressBar bar = new JProgressBar(0, 100);
             bar.setValue((int) im.getPorcentajeAsistencia());
             bar.setStringPainted(true);
             bar.setMaximumSize(new java.awt.Dimension(Integer.MAX_VALUE, 20));
             bar.setAlignmentX(java.awt.Component.LEFT_ALIGNMENT);
-
             jPanel5.add(lbl);
             jPanel5.add(bar);
             jPanel5.add(javax.swing.Box.createVerticalStrut(8));
         }
-
         jPanel5.revalidate();
         jPanel5.repaint();
     }
 
-    private void actualizarLista() { 
+    private void actualizarLista() {
         modeloLista.clear();
-        for (InscripcionMateria im : controlador.getInscripciones()) { 
+        for (InscripcionMateria im : estudiante.getMaterias()) {
             double asistencia = im.getPorcentajeAsistencia();
-            if (asistencia >= 75 && asistencia <= 85) { 
-                modeloLista.addElement(im.getMateria().getNombre() + " — " + 
+            if (asistencia >= 75 && asistencia <= 85) {
+                modeloLista.addElement(im.getMateria().getNombre() + " — " +
                     String.format("%.0f", asistencia) + "%");
-            } 
+            }
         }
     }
-    
+
+
     private void actualizarReportes() {
     DefaultTableModel modeloRiesgo = new DefaultTableModel(
         new String[]{"Materia", "Asistencia %"}, 0) {

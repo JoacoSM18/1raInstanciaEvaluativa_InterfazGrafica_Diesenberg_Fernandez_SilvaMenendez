@@ -19,7 +19,7 @@ import java.util.ArrayList;
     int cuatrimestre;
     int anio;
     
-    static ArrayList<String> codigos = new ArrayList<>();
+    public static ArrayList<String> codigos = new ArrayList<>();
 
     public void setNombre(String nombre) {
     this.nombre = nombre;
@@ -30,15 +30,9 @@ import java.util.ArrayList;
             System.out.println("Error: el codigo debe tener entre 3 y 10 caracteres");
             return;
         }
-
-        if (codigos.contains(codigo)) {
-            System.out.println("Error: codigo repetido");
-        } else {
-            this.codigo = codigo;
-            codigos.add(codigo);
-        }
+        this.codigo = codigo;
     }
-    
+
     public void setCuatrimestre(int cuatrimestre) {
         if (cuatrimestre == 1 || cuatrimestre == 2){
             this.cuatrimestre = cuatrimestre;
@@ -91,6 +85,9 @@ import java.util.ArrayList;
     @Override
     public boolean estaAprobada() {
         return getPromedio() >= 6;
+    }
+    public static void limpiarCodigos() {
+        codigos.clear();
     }
     
     public String toTexto() {
