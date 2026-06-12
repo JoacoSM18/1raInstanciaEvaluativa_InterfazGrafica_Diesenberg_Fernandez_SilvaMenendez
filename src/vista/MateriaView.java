@@ -233,8 +233,6 @@ public class MateriaView extends javax.swing.JFrame {
 
         jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("Editar Materia"));
 
-        txtCodigo.setEditable(false);
-
         btnGuardar.setText("Guardar cambios");
         btnGuardar.addActionListener(this::btnGuardarActionPerformed);
 
@@ -314,14 +312,11 @@ public class MateriaView extends javax.swing.JFrame {
                 .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnInscribir, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnRegistrarNota, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel6Layout.createSequentialGroup()
-                        .addGap(35, 35, 35)
-                        .addComponent(btnBaja, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel6Layout.createSequentialGroup()
-                        .addGap(18, 18, 18)
-                        .addComponent(btnRegistrarAsistencia, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(39, 39, 39)
+                .addGap(18, 18, 18)
+                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnRegistrarAsistencia, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnBaja, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(56, 56, 56)
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(45, 45, 45))
         );
@@ -400,6 +395,7 @@ public class MateriaView extends javax.swing.JFrame {
     
     private void btnRegistrarAsistenciaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRegistrarAsistenciaActionPerformed
         // TODO add your handling code here:
+        
         int fila = jTable1.getSelectedRow();
         if (fila < 0) {
             JOptionPane.showMessageDialog(this, "Seleccione una materia en la tabla primero.");
@@ -408,6 +404,10 @@ public class MateriaView extends javax.swing.JFrame {
         String nombre = (String) jTable1.getValueAt(fila, 0);
         InscripcionMateria im = buscarPorNombre(nombre);
         if (im == null) return;
+        if (im.getClasesAsistidas() >= im.getTotalClases()) {
+            JOptionPane.showMessageDialog(this, "Ya se registraron todas las clases de " + nombre + ".");
+            return;
+        }
         int respuesta = JOptionPane.showConfirmDialog(this, "¿Estuvo presente en " + nombre + "?", "Asistencia", JOptionPane.YES_NO_OPTION);
         im.registrarAsistencia(respuesta == JOptionPane.YES_OPTION);
         if (im.getPorcentajeAsistencia() < 75) {
